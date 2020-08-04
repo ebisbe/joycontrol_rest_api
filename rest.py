@@ -17,13 +17,15 @@ class ConnectRequest(BaseModel):
     controller_type: str = Field("PRO_CONTROLLER", title="Type of controller to emulate [PRO_CONTROLLER, JOYCON_R, JOYCON_L]", example="PRO_CONTROLLER")
     spi_firm: str = Field(None, title="Controller SPI Firm - base64 encoded", example="")
     reconnect_address: str = Field(None, title="MAC Address of switch - if empty a new pairing attempt will be done", example="E1:3F:54:0B:DE:BB")
+    bluetooth_adapter: str = Field(None, title="Bluetooth adapter - if empty will connect with default", example="046d:c52b")
 
     class Config:
         schema_extra = {
             "example":
                 {
                         "controller_type": "PRO_CONTROLLER",
-                        "reconnect_address": "E1:3F:54:0B:DE:BB"
+                        "reconnect_address": "E1:3F:54:0B:DE:BB",
+                        "bluetooth_adapter": "046d:c52b"
                 }
         }
 
@@ -42,7 +44,7 @@ async def connect_to_switch(cr: ConnectRequest):
     else:
         spi_firm_bytes = None
 
-    await app.state.switch_controller.connect(cr.controller_type, cr.reconnect_address, spi_firm_bytes)
+    await app.state.switch_controller.connect(cr.controller_type, cr.reconnect_address, spi_firm_bytes, cr.bluetooth_adapter)
     return await controller_status()
 
 @app.get("/controller/disconnect")

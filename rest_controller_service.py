@@ -49,7 +49,7 @@ class SwitchControllerService:
 
         self.transport = None
 
-    async def connect(self, controller_type: str, reconnect_address: str, spi_firm: bytes):
+    async def connect(self, controller_type: str, reconnect_address: str, spi_firm: bytes, bluetooth_adapter: str):
         if spi_firm is None:
             spi_flash = FlashMemory()
         else:
@@ -60,7 +60,7 @@ class SwitchControllerService:
             return ControllerProtocol(lib_controller_type, spi_flash=spi_flash)
 
         factory = create_controller_protocol
-        transport, protocol = await create_hid_server(factory, reconnect_bt_addr=reconnect_address)
+        transport, protocol = await create_hid_server(factory, reconnect_bt_addr=reconnect_address, reconnect_bt_addr=bluetooth_adapter)
         controller_state = protocol.get_controller_state()
         self.controller_state = controller_state
         self.transport = transport
